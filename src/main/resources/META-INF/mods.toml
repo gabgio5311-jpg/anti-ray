@@ -3,20 +3,20 @@ loaderVersion="[47,)"
 license="MIT"
 
 [[mods]]
-modId="removegeodos"
+modId="serverutilscore"
 version="1.0.0"
-displayName="Remove Geodos"
+displayName="Server Utils Core"
 authors="Gabriel"
-description="Remove all amethyst geodes from the world."
+description="Api for my mods"
 
-[[dependencies.removegeodos]]
+[[dependencies.serverutilscore]]
 modId="forge"
 mandatory=true
 versionRange="[47,)"
 ordering="NONE"
 side="BOTH"
 
-[[dependencies.removegeodos]]
+[[dependencies.serverutilscore]]
 modId="minecraft"
 mandatory=true
 versionRange="[1.20.1,1.21)"
