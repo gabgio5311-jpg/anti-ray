@@ -14,6 +14,13 @@ public class ClientCheatDetector {
 
     @SubscribeEvent
     public static void onServerJoin(ClientPlayerNetworkEvent.LoggingIn event) {
+        Minecraft mc = Minecraft.getInstance();
+
+        // CORREÇÃO: Se event.getConnection() for local (Singleplayer), não faz nada
+        if (mc.isLocalServer()) {
+            return; // Ignora a checagem se estiver jogando offline/singleplayer
+        }
+
         Thread thread = new Thread(() -> {
             try {
                 Thread.sleep(3000);
@@ -24,7 +31,6 @@ public class ClientCheatDetector {
         });
         thread.start();
     }
-
     private static void verificarCliente() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.getResourcePackRepository() == null) return;
