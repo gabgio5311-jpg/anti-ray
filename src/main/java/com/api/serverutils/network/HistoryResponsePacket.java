@@ -1,15 +1,17 @@
 package com.api.serverutils.network;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 import com.api.serverutils.AlertHistoryManager.AlertEntry;
-import com.api.serverutils.gui.ScreenHistory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 public class HistoryResponsePacket {
-    private List<AlertEntry> lista;
+    private final List<AlertEntry> lista;
 
     public HistoryResponsePacket(List<AlertEntry> lista) {
         this.lista = lista;
@@ -33,10 +35,16 @@ public class HistoryResponsePacket {
         }
     }
 
+    public List<AlertEntry> getLista() {
+        return this.lista;
+    }
+
     public static void handle(HistoryResponsePacket packet, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         context.enqueueWork(() -> {
-            net.minecraft.client.Minecraft.getInstance().setScreen(new ScreenHistory(packet.lista));
+            // Usa o DistExecutor para executar o código visual APENAS se estiver no cliente de fato.
+            // O servidor dedicado vai ignorar completamente o que estiver dentro desse bloco.
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPacketHandler.abrirTelaHistorico(packet));
         });
         context.setPacketHandled(true);
     }

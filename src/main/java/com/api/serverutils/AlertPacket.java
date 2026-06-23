@@ -31,6 +31,24 @@ public class AlertPacket {
             net.minecraft.server.level.ServerPlayer jogador = context.getSender();
             if (jogador != null) {
                 String nomeJogador = jogador.getName().getString();
+                java.util.UUID uuid = jogador.getUUID();
+
+                // --- NOVIDADE: SE O JOGADOR REMOVEU AS TRAPAÇAS ---
+                if (packet.getTipoCheat().equals("Nenhum")) {
+                    if (ModNetwork.JOGADORES_COM_XRAY.containsKey(uuid)) {
+                        ModNetwork.JOGADORES_COM_XRAY.remove(uuid);
+
+                        // Limpa título, subtítulo e actionbar de forma instantânea e garantida.
+                        jogador.connection.send(new net.minecraft.network.protocol.game.ClientboundClearTitlesPacket(true));
+
+                        System.out.println("[ANTI-CHEAT] O jogador " + nomeJogador + " removeu o X-Ray e foi perdoado.");
+                    }
+                    return; // Interrompe aqui para não salvar "Nenhum" no histórico de alertas!
+                }
+
+                // --- LOGICA ANTIGA: SE ELE FOI PEGO COM CHEAT ---
+                // Coloca o jogador na lista do ServerTickHandler para começar o spam visual
+                ModNetwork.JOGADORES_COM_XRAY.put(uuid, packet.getNomeDetectado());
 
                 // 1. SALVA NO HISTÓRICO EM MEMÓRIA (Para o comando /serverutils alerts achar)
                 AlertHistoryManager.adicionarAlerta(nomeJogador, packet.getTipoCheat(), packet.getNomeDetectado());
